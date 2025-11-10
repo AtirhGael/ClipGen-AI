@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+celery[redis]
+redis
+python-multipart
+ffmpeg-python
+whisperx
+scenedetect
+pydantic
+sqlalchemy
+psycopg2-binary
+python-dotenv

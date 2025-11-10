@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-clipgen}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-clipgen}
+      POSTGRES_DB: ${POSTGRES_DB:-clipgen}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - clipnet
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - clipnet
+
+  backend:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/usr/src/app
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - clipnet
+
+  worker:
+    build: ./backend
+    command: celery -A celery_app.celery_app worker --loglevel=info
+    volumes:
+      - ./backend:/usr/src/app
+      - ./data:/data
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - clipnet
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/usr/src/app
+    networks:
+      - clipnet
+
+volumes:
+  db-data:
+
+networks:
+  clipnet:
