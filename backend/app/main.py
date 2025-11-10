@@ -5,13 +5,16 @@ import os
 import logging
 from pathlib import Path
 from contextlib import asynccontextmanager
+from sqlalchemy import create_engine
 
 from app.config import settings
 from app.database import (
     init_redis, init_postgres, close_connections,
     check_redis_health, check_postgres_health,
-    get_db
+    get_db, engine
 )
+from app.models import Base
+from app.routers import videos
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -36,6 +39,12 @@ async def lifespan(app: FastAPI):
     try:
         init_postgres()
         logger.info("✅ PostgreSQL connection initialized successfully")
+        
+        # Create database tables
+        if engine:
+            Base.metadata.create_all(bind=engine)
+            logger.info("✅ Database tables created/verified successfully")
+        
     except Exception as e:
         logger.warning(f"⚠️ PostgreSQL connection failed: {e}")
         logger.info("Application will continue without PostgreSQL")
@@ -69,6 +78,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include API routers
+app.include_router(videos.router)
 
 @app.get("/")
 def root():

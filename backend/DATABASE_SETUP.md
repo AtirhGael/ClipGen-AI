@@ -15,17 +15,6 @@ docker stop redis-clipgen
 docker start redis-clipgen
 ```
 
-### Option 2: Using Chocolatey (Windows)
-```bash
-# Install Chocolatey from https://chocolatey.org/install
-# Then run in PowerShell as Administrator:
-choco install redis-64
-
-# Start Redis:
-redis-server
-```
-
-### Option 3: Using WSL2 (Windows Subsystem for Linux)
 ```bash
 # Install WSL2 and Ubuntu
 # Then in WSL terminal:
@@ -35,10 +24,6 @@ sudo apt install redis-server
 # Start Redis:
 sudo service redis-server start
 ```
-
-### Option 4: Manual Installation
-1. Download Redis for Windows from: https://github.com/microsoftarchive/redis/releases
-2. Extract and run `redis-server.exe`
 
 ## PostgreSQL Setup Options
 
@@ -57,12 +42,6 @@ docker run --name postgres-clipgen \
 3. Use password: `password` (or update .env file)
 4. Create database: `clipgen`
 
-### Option 3: Using Chocolatey
-```bash
-choco install postgresql
-```
-
-## Verification Commands
 
 ### Test Redis Connection
 ```bash
@@ -101,7 +80,51 @@ POSTGRES_PASSWORD=your_actual_password
 
 - ✅ Python Redis client (`redis==7.0.1`) - Installed
 - ✅ PostgreSQL client (`psycopg2-binary==2.9.11`) - Installed  
-- ❌ Redis Server - Not running
-- ❌ PostgreSQL Server - Not running
+- ✅ Redis Server - Running (Docker: redis-clipgen)
+- ✅ PostgreSQL Server - Running (Docker: my_postgres)
+- ✅ FastAPI Backend - Connected to both databases
 
-The FastAPI application will start successfully even without the database servers running, but database-related features will be unavailable until you set them up.
+## Your Docker Containers
+
+### Redis Container
+```bash
+Container ID: 813737f4fecf
+Image: redis:latest  
+Port: 0.0.0.0:6379->6379/tcp
+Name: redis-clipgen
+Status: Up 19 minutes
+```
+
+### PostgreSQL Container  
+```bash
+Container ID: bef4e21b08d9
+Image: postgres
+Port: 0.0.0.0:5432->5432/tcp
+Name: my_postgres  
+Status: Up 7 seconds
+Database: clipgen
+User: postgres
+Password: password
+```
+
+## Container Management
+
+### Start containers (if stopped):
+```bash
+docker start redis-clipgen
+docker start my_postgres
+```
+
+### Stop containers:
+```bash
+docker stop redis-clipgen  
+docker stop my_postgres
+```
+
+### View container logs:
+```bash
+docker logs redis-clipgen
+docker logs my_postgres
+```
+
+All database connections are now working perfectly! 🎉
