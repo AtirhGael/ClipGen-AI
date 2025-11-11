@@ -39,11 +39,14 @@ class AudioTranscriber:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.executor = ThreadPoolExecutor(max_workers=2)
         
-        # Load model
-        self._load_model()
+        # Don't load model at startup - load lazily when needed
+        # self._load_model()
     
     def _load_model(self):
-        """Load Whisper model"""
+        """Load Whisper model (lazy loading)"""
+        if self.model is not None:
+            return  # Already loaded
+            
         try:
             logger.info(f"Loading Whisper model '{self.model_size}' on {self.device}")
             self.model = whisper.load_model(self.model_size, device=self.device)
@@ -143,6 +146,7 @@ class AudioTranscriber:
             Transcription result with segments and metadata
         """
         try:
+            # Load model lazily when first needed
             if self.model is None:
                 self._load_model()
             
