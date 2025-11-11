@@ -145,7 +145,7 @@ async def process_video(
             duration=metadata.get('duration'),
             status="pending",
             progress=0,
-            metadata=metadata
+            youtube_metadata=metadata
         )
         
         db.add(new_video)

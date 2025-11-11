@@ -26,7 +26,7 @@ class Video(Base):
     thumbnail_path = Column(String, nullable=True)  # Local path to thumbnail
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
-    metadata = Column(JSON, nullable=True)  # Additional YouTube metadata
+    youtube_metadata = Column(JSON, nullable=True)  # Additional YouTube metadata
     error_message = Column(Text, nullable=True)  # Error details if processing failed
     
     # Relationships
@@ -110,7 +110,7 @@ class ProcessingJob(Base):
     completed_at = Column(DateTime, nullable=True)
     
     # Job metadata
-    metadata = Column(JSON, nullable=True)        # Additional job-specific data
+    job_metadata = Column(JSON, nullable=True)        # Additional job-specific data
 
 
 # Define valid statuses for better validation
